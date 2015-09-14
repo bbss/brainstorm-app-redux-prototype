@@ -1,6 +1,8 @@
 import React, { Component, findDOMNode } from 'react'
 import { store } from './index'
 import { connect } from 'react-redux'
+import immutable from 'immutable'
+
 
 @connect((state) => ({
   graphState: state
@@ -8,7 +10,7 @@ import { connect } from 'react-redux'
 export default class App extends Component {
   render() {
     const { graphState } = this.props
-    let graphStateIsWhatWeWant = graphState === whatWeWant
+    let graphStateIsWhatWeWant = graphState.equals(whatWeWant)
 
     return (
       <div>
@@ -16,31 +18,41 @@ export default class App extends Component {
         width: '50%', height: '50%',
         background: (graphStateIsWhatWeWant ? 'rgba(30, 255, 30, 0.5)'
         : 'orange')
-        } } value={JSON.stringify(graphState, null, 4)} />
+        } } value={JSON.stringify(graphState.toJS(), null, 4)} />
         <textarea readOnly style={ {
         width: '50%', height: '50%',
         background: 'rgba(30, 255, 30, 0.5)'
-        } } value={JSON.stringify(whatWeWant, null, 4)} />
+        } } value={JSON.stringify(whatWeWant.toJS(), null, 4)} />
       </div>
     )
   }
 }
 
-let initialGraphState = {
+let initialGraphState = immutable.fromJS({
   color: {
     red: {}
   }
-}
+})
 
-let whatWeWant = {
+let whatWeWant = immutable.fromJS({
   color: {
     red: {},
     blue: {}
   }
+})
+
+let addBlueAction = {
+  type: 'addConcept',
+  payload: {to: 'color', add: 'blue'}
 }
+
+store ? store.dispatch(addBlueAction) : null
 
 export function graphReducer (state = initialGraphState, action = {}) {
   switch (action.type) {
+    case 'addConcept':
+
+      return state
     default:
       return state
   }
