@@ -3,29 +3,45 @@ import { store } from './index'
 import { connect } from 'react-redux'
 
 @connect((state) => ({
-  state: state
+  graphState: state
 }))
 export default class App extends Component {
   render() {
-    const { state } = this.props
+    const { graphState } = this.props
+    let graphStateIsWhatWeWant = graphState === whatWeWant
+
     return (
       <div>
-        {state}
-        Hello world!
+        <textarea readOnly style={ {
+        width: '50%', height: '50%',
+        background: (graphStateIsWhatWeWant ? 'rgba(30, 255, 30, 0.5)'
+        : 'orange')
+        } } value={JSON.stringify(graphState, null, 4)} />
+        <textarea readOnly style={ {
+        width: '50%', height: '50%',
+        background: 'rgba(30, 255, 30, 0.5)'
+        } } value={JSON.stringify(whatWeWant, null, 4)} />
       </div>
     )
   }
 }
 
+let initialGraphState = {
+  color: {
+    red: {}
+  }
+}
 
-let anAction =  { type: "Something happened!", payload: "I said hello"}
+let whatWeWant = {
+  color: {
+    red: {},
+    blue: {}
+  }
+}
 
-export function exampleReducer (initialState = {}, action = {}) {
+export function graphReducer (state = initialGraphState, action = {}) {
   switch (action.type) {
-    case 'Something happened!':
-      console.log(action.payload)
-      return initialState.something = action.payload
     default:
-      return initialState
+      return state
   }
 }
