@@ -30,26 +30,33 @@ export default class App extends Component {
 
 let initialGraphState = immutable.fromJS({
   color: {
+    orange: {
+      roses: {}
+    },
     red: {}
   }
 })
 
 let whatWeWant = immutable.fromJS({
   color: {
-    red: {},
-    blue: {}
+    red: {
+      roses: {}
+    }
   }
 })
 
-let addBlueAction = {
-  type: 'addConcept',
-  payload: {to: ['color'], add: ['blue']}
-}
+let moveAndRenameOrange =
+{ type: 'moveAndRenameConcept', payload: { to: ['color', 'orange'], add: ['color', 'red'] } }
 
-store ? store.dispatch(addBlueAction) : null
+store ? store.dispatch(moveAndRenameOrange) : null
 
 export function graphReducer (state = initialGraphState, action = {}) {
   switch (action.type) {
+    case 'moveAndRenameConcept':
+
+      let movedAndRenamedConcept = state.getIn(action.payload.add)
+      state = state.deleteIn(action.payload.add)
+      return state.mergeIn(action.payload.to, movedAndRenamedConcept)
     case 'addConcept':
       return state.setIn(action.payload.to.concat(action.payload.add), Map())
     default:
