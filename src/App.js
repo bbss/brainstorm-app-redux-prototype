@@ -1,7 +1,7 @@
 import React, { Component, findDOMNode } from 'react'
 import { store } from './index'
 import { connect } from 'react-redux'
-import immutable from 'immutable'
+import immutable, { Map } from 'immutable'
 
 
 @connect((state) => ({
@@ -43,7 +43,7 @@ let whatWeWant = immutable.fromJS({
 
 let addBlueAction = {
   type: 'addConcept',
-  payload: {to: 'color', add: 'blue'}
+  payload: {to: ['color'], add: ['blue']}
 }
 
 store ? store.dispatch(addBlueAction) : null
@@ -51,8 +51,7 @@ store ? store.dispatch(addBlueAction) : null
 export function graphReducer (state = initialGraphState, action = {}) {
   switch (action.type) {
     case 'addConcept':
-
-      return state
+      return state.setIn(action.payload.to.concat(action.payload.add), Map())
     default:
       return state
   }
