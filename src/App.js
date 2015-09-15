@@ -34,7 +34,10 @@ function transformToNodesAndLinks (graph) {
   nodesAndLinks = graph.reduce(addNodesAndLinks(''), nodesAndLinks)
   return nodesAndLinks
 }
-
+/*
+Still needs work, not correctly finding all the links yet. Have to hash the key
+path to a number as d3 takes an int for target/source.
+ */
 function addNodesAndLinks (currentPath) {
   return (acc, next, concept) => {
     if(currentPath === '') currentPath = concept
@@ -132,7 +135,8 @@ let whatWeWant = immutable.fromJS({
       },
       orange: {
         mandarin: {
-          monkey: {}
+          monkey: {},
+          greatApe: {}
         }
       }
     }
