@@ -31,27 +31,23 @@ export default class App extends Component {
 
 function transformToNodesAndLinks (graph) {
   let nodesAndLinks = immutable.fromJS({nodes: [], links: []})
-  nodesAndLinks = graph.reduce(addNodesAndLinks(''), nodesAndLinks)
+  nodesAndLinks = loopThoroughMap(graph, nodesAndLinks)
   return nodesAndLinks
 }
-/*
-Still needs work, not correctly finding all the links yet. Have to hash the key
-path to a number as d3 takes an int for target/source.
- */
-function addNodesAndLinks (currentPath) {
-  return (acc, next, concept) => {
-    if(currentPath === '') currentPath = concept
-    console.log(concept)
-    acc = acc.update('nodes', nodes => nodes.push({ name: concept }))
-    next.forEach((_, dep) => {
-      acc = acc.update('links',
-        links => links.push({ source: 0, target: 1 }))
-      acc = next.reduce(addNodesAndLinks(currentPath+dep), acc)
-    })
-    return acc
-  }
-}
 
+function loopThoroughMap(source, result, deepCoun = 0, lastNodeIndex = 0, nodeCounter = {counter: 0}){
+  source.forEach((item, index) => {
+    console.log(deepCoun + "!!!!")
+    console.log(index)
+    result = result.update('nodes', nodes => nodes.push({ name: index }))
+    if(nodeCounter.counter != 0){
+      result = result.update('links', links => links.push({ source: lastNodeIndex, target: nodeCounter.counter }))
+    }
+    nodeCounter.counter++
+    result = loopThoroughMap(item, result, deepCoun + 1, nodeCounter.counter - 1, nodeCounter)
+  })
+  return result
+}
 
 @connect((state) => ({
   nodesAndLinks : transformToNodesAndLinks(state.get('graph'))
@@ -90,7 +86,7 @@ class ForceDirectedGraph extends Component {
 
     node.append('text').
       attr("dx", d => -d.name.length * 3).
-      attr("dy", ".35em").
+      attr("dy", ".2em").
       text(d => d.name)
 
     force.on("tick", function() {
@@ -100,7 +96,7 @@ class ForceDirectedGraph extends Component {
         .attr("y2", function(d) { return d.target.y })
 
       node.attr("transform",
-        function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+        function(d) { return "translate(" + d.x + "," + d.y + ")" })
 
     })
   }
@@ -116,7 +112,8 @@ let initialGraphState = immutable.fromJS({
   graph: {
     color: {
       red: {
-        roses: {}
+        roses: {},
+        sun: {}
       },
       orange: {
         mandarin: {
@@ -163,4 +160,3 @@ export function graphReducer(state = initialGraphState, action = {}) {
       return state
   }
 }
-
